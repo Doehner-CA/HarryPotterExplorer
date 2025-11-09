@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text,View, TextInput, Pressable} from 'react-native';
 
@@ -27,12 +26,11 @@ export default function App() {
   const handleCategoryChange = (newCategory) => {
     console.log('Category changed to:', newCategory);
     setCategory(newCategory);
-    setResults([]); // Clear previous results
+    setResults([]);//clear previous result
   };
 
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
 
       {/* HEADER */}
       <View style={styles.header}>
@@ -51,6 +49,42 @@ export default function App() {
         <Pressable style={styles.searchButton} onPress={handleSearch}>
           <Text style={styles.searchButtonText}>Search</Text>
         </Pressable>
+      </View>
+
+      {/* CATEGORY BUTTONS  */}
+      <View style={styles.categorySection}>
+        <Text style={styles.categoryLabel}>Select Category:</Text>
+        <View style={styles.buttonRow}>
+          <Pressable
+            style={[styles.categoryButton, category === 'characters' && styles.categoryButtonActive]}//logical AND operator
+            onPress={() => handleCategoryChange('characters')}
+          >
+            <Text style={[styles.categoryButtonText, category === 'characters' && styles.categoryButtonTextActive]}>Characters</Text>
+          </Pressable>
+
+          <Pressable
+            style={[styles.categoryButton, category === 'spells' && styles.categoryButtonActive]}
+            onPress={() => handleCategoryChange('spells')}
+          >
+            <Text style={[styles.categoryButtonText, category === 'spells' && styles.categoryButtonTextActive]}>Spells</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.buttonRow}>
+          <Pressable
+            style={[styles.categoryButton, category === 'houses' && styles.categoryButtonActive]}
+            onPress={() => handleCategoryChange('houses')}
+          >
+            <Text style={[styles.categoryButtonText, category === 'houses' && styles.categoryButtonTextActive]}>Houses</Text>
+          </Pressable>
+
+          <Pressable
+            style={[styles.categoryButton, category === 'books' && styles.categoryButtonActive]}
+            onPress={() => handleCategoryChange('books')}
+          >
+            <Text style={[styles.categoryButtonText, category === 'books' && styles.categoryButtonTextActive]}>Books</Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -83,4 +117,77 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontStyle: 'italic',
   },
+
+  //Search
+  searchSection: {
+    padding: 15,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#CCC',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: '#FAFAFA',
+    marginBottom: 10,
+  },
+  searchButton: {
+    backgroundColor: '#740001',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#D3A625',
+  },
+  searchButtonText: {
+    color: '#D3A625',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
+  // Category
+  categorySection: {
+    padding: 15,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  categoryLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2C3E50',
+    marginBottom: 10,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  categoryButton: {
+    flex: 1,
+    backgroundColor: '#E0E0E0',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginHorizontal: 5,
+    borderWidth: 2,
+    borderColor: '#CCC',
+  },
+  categoryButtonActive: {
+    backgroundColor: '#740001',
+    borderColor: '#D3A625',
+  },
+  categoryButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#2C3E50',
+  },
+  categoryButtonTextActive: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#D3A625',
+  }
 });
