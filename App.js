@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Pressable, ActivityIndicator, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, ActivityIndicator, FlatList, Image } from 'react-native';
 
 export default function App() {
   // category(characters, spells, houses, books)
@@ -171,10 +171,14 @@ export default function App() {
         <Text style={styles.subtitle}>Discover the Wizarding World</Text>
       </View>
 
-      {/* SCROLLABLE CONTENT */}
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
-
-        {/* CATEGORY BUTTONS  */}
+      {/* FLATLIST - Entire page */}
+      <FlatList
+        data={results}
+        keyExtractor={(item, index) => `${category}-${index}`}
+        renderItem={({ item }) => <ResultItem item={item} category={category} />}//how to display result
+        ListHeaderComponent={//content before results (category + search)
+          <>
+            {/* CATEGORY BUTTONS  */}
         <View style={styles.categorySection}>
           <Text style={styles.categoryLabel}>Select Category:</Text>
           <View style={styles.buttonRow}>
@@ -222,34 +226,33 @@ export default function App() {
           <Text style={styles.searchButtonText}>Search</Text>
         </Pressable>
         </View>
-
-        {/* RESULTS*/}
-        <View style={styles.resultsSection}>
-          {loading ? (//if loading is true, show the loading indicator, if false, check error state
-            <ActivityIndicator size="large" color="#740001" />
-          ) : error ? (//if error true, show error msg, if not, check if resultsList is empty
-            <Text style={styles.errorText}>{error}</Text>
-          ) : results.length === 0 ? (// if resultsList is empty, show prompt, if not, show results
-            <Text style={styles.placeholderText}>
-              Select a category and search to explore!
-            </Text>
-          ) : (
-            // Map through results
-            results.map((item, index) => (
-              <ResultItem key={`${category}-${index}`} item={item} category={category} />
-            ))
-          )}
-        </View>
-
-        {/* FOOTER */}
-        <View style={styles.footer}>
+          </>
+        }
+        ListEmptyComponent={//content when result is empty
+          <View style={styles.resultsSection}>
+            {loading ? (
+              <ActivityIndicator size="large" color="#740001" />
+            ) : error ? (
+              <Text style={styles.errorText}>{error}</Text>
+            ) : (
+              <Text style={styles.placeholderText}>
+                Select a category and search to explore!
+              </Text>
+            )}
+          </View>
+        }
+        ListFooterComponent={
+          <View style={styles.footer}>
           <Image
             source={require('./assets/hogwarts.png')}
             style={styles.hogwartsImage}
             resizeMode="contain"
           />
-        </View>
-      </ScrollView>
+          </View>
+        }
+        contentContainerStyle={styles.scrollContent}
+        style={styles.scrollContainer}
+      />
     </View>
   );
 }
@@ -383,7 +386,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     padding: 15,
     borderRadius: 8,
-    marginBottom: 10,
+    marginTop: 10,
+    marginRight: 10,
+    marginLeft: 10,
     borderWidth: 1,
     borderColor: '#E0E0E0',
     shadowColor: '#000',
