@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text,View, TextInput, Pressable, ActivityIndicator, FlatList} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, ActivityIndicator, ScrollView, Image } from 'react-native';
 
 export default function App() {
   // category(characters, spells, houses, books)
@@ -84,18 +84,27 @@ export default function App() {
   const ResultItem = ({ item, category }) => {
     if (category === 'characters') {
       return (
-        <View style={styles.resultItem}>
-          <Text style={styles.resultTitle}>{item.fullName || 'Unknown'}</Text>
-          {item.nickname && <Text style={styles.resultSubtitle}>"{item.nickname}"</Text>}
-          {item.hogwartsHouse && (
-            <Text style={styles.resultDetail}>House: {item.hogwartsHouse}</Text>
+        <View style={[styles.resultItem, styles.characterItem]}>
+          {item.image && (
+            <Image
+              source={{ uri: item.image }}
+              style={styles.characterImage}
+              resizeMode="cover"
+            />
           )}
-          {item.interpretedBy && (
-            <Text style={styles.resultDetail}>Actor: {item.interpretedBy}</Text>
-          )}
-          {item.birthdate && (
-            <Text style={styles.resultDetail}>Born: {item.birthdate}</Text>
-          )}
+          <View style={styles.characterInfo}>
+            <Text style={styles.resultTitle}>{item.fullName || 'Unknown'}</Text>
+            {item.nickname && <Text style={styles.resultSubtitle}>"{item.nickname}"</Text>}
+            {item.hogwartsHouse && (
+              <Text style={styles.resultDetail}>House: {item.hogwartsHouse}</Text>
+            )}
+            {item.interpretedBy && (
+              <Text style={styles.resultDetail}>Actor: {item.interpretedBy}</Text>
+            )}
+            {item.birthdate && (
+              <Text style={styles.resultDetail}>Born: {item.birthdate}</Text>
+            )}
+          </View>
         </View>
       );
     }
@@ -147,7 +156,6 @@ export default function App() {
       );
     }
 
-    // Fallback for unknown categories (shouldn't happen)
     return (
       <View style={styles.resultItem}>
         <Text style={styles.resultText}>{JSON.stringify(item)}</Text>
@@ -157,15 +165,17 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-
-      {/* HEADER */}
+      {/* HEADER\*/}
       <View style={styles.header}>
         <Text style={styles.title}>⚡ Harry Potter Explorer ⚡</Text>
         <Text style={styles.subtitle}>Discover the Wizarding World</Text>
       </View>
 
-      {/* SEARCH */}
-      <View style={styles.searchSection}>
+      {/* SCROLLABLE CONTENT */}
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
+        
+        {/* SEARCH */}
+        <View style={styles.searchSection}>
         <TextInput
           style={styles.searchInput}
           placeholder="Search (e.g., Harry, Expelliarmus)..."
@@ -175,62 +185,71 @@ export default function App() {
         <Pressable style={styles.searchButton} onPress={handleSearch}>
           <Text style={styles.searchButtonText}>Search</Text>
         </Pressable>
-      </View>
+        </View>
 
       {/* CATEGORY BUTTONS  */}
-      <View style={styles.categorySection}>
-        <Text style={styles.categoryLabel}>Select Category:</Text>
-        <View style={styles.buttonRow}>
-          <Pressable
-            style={[styles.categoryButton, category === 'characters' && styles.categoryButtonActive]}//logical AND operator
-            onPress={() => handleCategoryChange('characters')}
-          >
-            <Text style={[styles.categoryButtonText, category === 'characters' && styles.categoryButtonTextActive]}>Characters</Text>
-          </Pressable>
+        <View style={styles.categorySection}>
+          <Text style={styles.categoryLabel}>Select Category:</Text>
+          <View style={styles.buttonRow}>
+            <Pressable
+              style={[styles.categoryButton, category === 'characters' && styles.categoryButtonActive]}//logical AND operator
+              onPress={() => handleCategoryChange('characters')}
+            >
+              <Text style={[styles.categoryButtonText, category === 'characters' && styles.categoryButtonTextActive]}>Characters</Text>
+            </Pressable>
 
-          <Pressable
-            style={[styles.categoryButton, category === 'spells' && styles.categoryButtonActive]}
-            onPress={() => handleCategoryChange('spells')}
-          >
-            <Text style={[styles.categoryButtonText, category === 'spells' && styles.categoryButtonTextActive]}>Spells</Text>
-          </Pressable>
+            <Pressable
+              style={[styles.categoryButton, category === 'spells' && styles.categoryButtonActive]}
+              onPress={() => handleCategoryChange('spells')}
+            >
+              <Text style={[styles.categoryButtonText, category === 'spells' && styles.categoryButtonTextActive]}>Spells</Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.buttonRow}>
+            <Pressable
+              style={[styles.categoryButton, category === 'houses' && styles.categoryButtonActive]}
+              onPress={() => handleCategoryChange('houses')}
+            >
+              <Text style={[styles.categoryButtonText, category === 'houses' && styles.categoryButtonTextActive]}>Houses</Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.categoryButton, category === 'books' && styles.categoryButtonActive]}
+              onPress={() => handleCategoryChange('books')}
+            >
+              <Text style={[styles.categoryButtonText, category === 'books' && styles.categoryButtonTextActive]}>Books</Text>
+            </Pressable>
+          </View>
         </View>
 
-        <View style={styles.buttonRow}>
-          <Pressable
-            style={[styles.categoryButton, category === 'houses' && styles.categoryButtonActive]}
-            onPress={() => handleCategoryChange('houses')}
-          >
-            <Text style={[styles.categoryButtonText, category === 'houses' && styles.categoryButtonTextActive]}>Houses</Text>
-          </Pressable>
-
-          <Pressable
-            style={[styles.categoryButton, category === 'books' && styles.categoryButtonActive]}
-            onPress={() => handleCategoryChange('books')}
-          >
-            <Text style={[styles.categoryButtonText, category === 'books' && styles.categoryButtonTextActive]}>Books</Text>
-          </Pressable>
+        {/* RESULTS*/}
+        <View style={styles.resultsSection}>
+          {loading ? (//if loading is true, show the loading indicator, if false, check error state
+            <ActivityIndicator size="large" color="#740001" />
+          ) : error ? (//if error true, show error msg, if not, check if resultsList is empty
+            <Text style={styles.errorText}>{error}</Text>
+          ) : results.length === 0 ? (// if resultsList is empty, show prompt, if not, show results
+            <Text style={styles.placeholderText}>
+              Select a category and search to explore!
+            </Text>
+          ) : (
+            // Map through results instead of FlatList (since we're in ScrollView)
+            results.map((item, index) => (
+              <ResultItem key={`${category}-${index}`} item={item} category={category} />
+            ))
+          )}
         </View>
-      </View>
 
-      {/* RESULTS*/}
-      <View style={styles.resultsSection}>
-        {loading ? (//if loading is true, show the loading indicator, if false, check error state
-          <ActivityIndicator size="large" color="#740001" />
-        ) : error ? (//if error true, show error msg, if not, check if resultsList is empty
-          <Text style={styles.errorText}>{error}</Text>
-        ) : results.length === 0 ? (// if resultsList is empty, show prompt, if not, show flatlist
-          <Text style={styles.placeholderText}>
-            Select a category and search to explore!
-          </Text>
-        ) : (
-          <FlatList
-            data={results}
-            keyExtractor={(item, index) => `${category}-${index}`}
-            renderItem={({ item }) => <ResultItem item={item} category={category} />}//pass required props and reuturn jsx
+        {/* FOOTER */}
+        <View style={styles.footer}>
+          <Image
+            source={require('./assets/hogwarts.png')}
+            style={styles.hogwartsImage}
+            resizeMode="contain"
           />
-        )}
-      </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -240,7 +259,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-    paddingTop: 40, 
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'space-between',//firstchild at the start, and last child aligned at the end of the container
   },
 
   // Header
@@ -338,8 +363,8 @@ const styles = StyleSheet.create({
 
   // Results
   resultsSection: {
-    flex: 1,
     padding: 15,
+    minHeight: 250, 
   },
   placeholderText: {
     textAlign: 'center',
@@ -387,5 +412,36 @@ const styles = StyleSheet.create({
   resultText: {
     fontSize: 14,
     color: '#2C3E50',
+  },
+
+  // Character-specific styles
+  characterImage: {
+    width: 80,
+    height: 100,
+    borderRadius: 8,
+    marginRight: 15,
+    borderWidth: 2,
+    borderColor: '#D3A625',
+  },
+  characterItem: {
+    flexDirection: 'row', //img side by side with data
+  },
+  characterInfo: {
+    flex: 1,
+  },
+
+  // Footer
+  footer: {
+    backgroundColor: '#FFFFFF',
+    padding: 10,
+    alignItems: 'center',
+    borderTopWidth: 3,
+    borderTopColor: '#D3A625',
+    marginTop: 10,
+  },
+  hogwartsImage: {
+    width: '100%',
+    maxWidth: 600,
+    height: 150,
   },
 });
