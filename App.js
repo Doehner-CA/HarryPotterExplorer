@@ -17,10 +17,61 @@ export default function App() {
   // Track errors
   const [error, setError] = useState(null);
 
+  // This function fetches data from the Potter API based on category and search query
+  const fetchPotterData = async () => {
+    const baseUrl = 'https://potterapi-fedeperin.vercel.app';
+    let url = `${baseUrl}/en/${category}`; // e.g., /en/characters
+
+    // add search parameter 
+    if (searchQuery.trim() !== '') {
+      url += `?search=${encodeURIComponent(searchQuery)}`; // e.g., /en/characters?search=Harry. encodeURIComponent to sanitize our string
+    }
+
+    console.log('Fetching from URL:', url);
+
+    // set loading state to true (shows spinner)
+    setLoading(true);
+    setError(null); // Clear previous errors
+
+    try {
+      // API call
+      const response = await fetch(url);
+
+      // Check if response is OK (status 200-299)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // parse JSON data
+      const data = await response.json();
+      console.log('Received data:', data); 
+
+      // update results state with the data
+      setResults(data);
+
+      // If no results found, show message
+      if (data.length === 0) {
+        setError('No results found. Try a different search!');
+      }
+
+    } catch (err) {
+      // Handle any errors (network issues, parsing errors, etc.)
+      console.error('Error fetching data:', err);
+      setError(`Failed to fetch data: ${err.message}`);
+      setResults([]);
+    } finally {
+      //always set loading to false when done (success or error)
+      setLoading(false);
+    }
+  };
+
   // search button handler
   const handleSearch = () => {
     console.log('Search button pressed');
-    // TODO: Fetch data from API
+    console.log('Category:', category);
+    console.log('Search Query:', searchQuery);
+
+    fetchPotterData();
   };
   //change button handler
   const handleCategoryChange = (newCategory) => {
