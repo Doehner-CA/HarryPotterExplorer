@@ -80,6 +80,81 @@ export default function App() {
     setResults([]);//clear previous result
   };
 
+  // This component renders each item in the FlatList based on the category. return jsx
+  const ResultItem = ({ item, category }) => {
+    if (category === 'characters') {
+      return (
+        <View style={styles.resultItem}>
+          <Text style={styles.resultTitle}>{item.fullName || 'Unknown'}</Text>
+          {item.nickname && <Text style={styles.resultSubtitle}>"{item.nickname}"</Text>}
+          {item.hogwartsHouse && (
+            <Text style={styles.resultDetail}>House: {item.hogwartsHouse}</Text>
+          )}
+          {item.interpretedBy && (
+            <Text style={styles.resultDetail}>Actor: {item.interpretedBy}</Text>
+          )}
+          {item.birthdate && (
+            <Text style={styles.resultDetail}>Born: {item.birthdate}</Text>
+          )}
+        </View>
+      );
+    }
+
+    if (category === 'spells') {
+      return (
+        <View style={styles.resultItem}>
+          <Text style={styles.resultTitle}>{item.spell || 'Unknown Spell'}</Text>
+          {item.use && <Text style={styles.resultDetail}>{item.use}</Text>}
+        </View>
+      );
+    }
+
+    if (category === 'houses') {
+      return (
+        <View style={styles.resultItem}>
+          <Text style={styles.resultTitle}>
+            {item.emoji || ''} {item.house || 'Unknown House'}
+          </Text>
+          {item.founder && (
+            <Text style={styles.resultDetail}>Founder: {item.founder}</Text>
+          )}
+          {item.colors && item.colors.length > 0 && (
+            <Text style={styles.resultDetail}>
+              Colors: {item.colors.join(', ')}
+            </Text>
+          )}
+          {item.animal && (
+            <Text style={styles.resultDetail}>Animal: {item.animal}</Text>
+          )}
+        </View>
+      );
+    }
+
+    if (category === 'books') {
+      return (
+        <View style={styles.resultItem}>
+          <Text style={styles.resultTitle}>{item.title || 'Unknown Book'}</Text>
+          {item.originalTitle && item.originalTitle !== item.title && (
+            <Text style={styles.resultSubtitle}>Original: {item.originalTitle}</Text>
+          )}
+          {item.releaseDate && (
+            <Text style={styles.resultDetail}>Released: {item.releaseDate}</Text>
+          )}
+          {item.pages && (
+            <Text style={styles.resultDetail}>Pages: {item.pages}</Text>
+          )}
+        </View>
+      );
+    }
+
+    // Fallback for unknown categories (shouldn't happen)
+    return (
+      <View style={styles.resultItem}>
+        <Text style={styles.resultText}>{JSON.stringify(item)}</Text>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
 
@@ -152,11 +227,7 @@ export default function App() {
           <FlatList
             data={results}
             keyExtractor={(item, index) => `${category}-${index}`}
-            renderItem={({ item }) => (
-              <View style={styles.resultItem}>
-                <Text style={styles.resultText}>{JSON.stringify(item)}</Text>
-              </View>
-            )}
+            renderItem={({ item }) => <ResultItem item={item} category={category} />}//pass required props and reuturn jsx
           />
         )}
       </View>
@@ -290,6 +361,28 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: '#E0E0E0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  resultTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#740001',
+    marginBottom: 5,
+  },
+  resultSubtitle: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: '#555',
+    marginBottom: 8,
+  },
+  resultDetail: {
+    fontSize: 14,
+    color: '#2C3E50',
+    marginTop: 4,
+    lineHeight: 20,
   },
   resultText: {
     fontSize: 14,
