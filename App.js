@@ -80,7 +80,7 @@ export default function App() {
     setResults([]);//clear previous result
   };
 
-  // This component renders each item in the FlatList based on the category. return jsx
+  // This component renders each item based on the category. return jsx
   const ResultItem = ({ item, category }) => {
     if (category === 'characters') {
       return (
@@ -165,7 +165,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {/* HEADER\*/}
+      {/* HEADER*/}
       <View style={styles.header}>
         <Text style={styles.title}>⚡ Harry Potter Explorer ⚡</Text>
         <Text style={styles.subtitle}>Discover the Wizarding World</Text>
@@ -173,21 +173,8 @@ export default function App() {
 
       {/* SCROLLABLE CONTENT */}
       <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
-        
-        {/* SEARCH */}
-        <View style={styles.searchSection}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search (e.g., Harry, Expelliarmus)..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        <Pressable style={styles.searchButton} onPress={handleSearch}>
-          <Text style={styles.searchButtonText}>Search</Text>
-        </Pressable>
-        </View>
 
-      {/* CATEGORY BUTTONS  */}
+        {/* CATEGORY BUTTONS  */}
         <View style={styles.categorySection}>
           <Text style={styles.categoryLabel}>Select Category:</Text>
           <View style={styles.buttonRow}>
@@ -223,6 +210,19 @@ export default function App() {
           </View>
         </View>
 
+        {/* SEARCH */}
+        <View style={styles.searchSection}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search (e.g., Harry, Expelliarmus)..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        <Pressable style={styles.searchButton} onPress={handleSearch}>
+          <Text style={styles.searchButtonText}>Search</Text>
+        </Pressable>
+        </View>
+
         {/* RESULTS*/}
         <View style={styles.resultsSection}>
           {loading ? (//if loading is true, show the loading indicator, if false, check error state
@@ -234,7 +234,7 @@ export default function App() {
               Select a category and search to explore!
             </Text>
           ) : (
-            // Map through results instead of FlatList (since we're in ScrollView)
+            // Map through results
             results.map((item, index) => (
               <ResultItem key={`${category}-${index}`} item={item} category={category} />
             ))
@@ -288,37 +288,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
 
-  //Search
-  searchSection: {
-    padding: 15,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-  },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: '#CCC',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#FAFAFA',
-    marginBottom: 10,
-  },
-  searchButton: {
-    backgroundColor: '#740001',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#D3A625',
-  },
-  searchButtonText: {
-    color: '#D3A625',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-
-  // Category
+// Category
   categorySection: {
     padding: 15,
     backgroundColor: '#FFFFFF',
@@ -359,6 +329,36 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: '#D3A625',
+  },
+
+  //Search
+  searchSection: {
+    padding: 15,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#CCC',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: '#FAFAFA',
+    marginBottom: 10,
+  },
+  searchButton: {
+    backgroundColor: '#740001',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#D3A625',
+  },
+  searchButtonText: {
+    color: '#D3A625',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 
   // Results
