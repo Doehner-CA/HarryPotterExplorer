@@ -287,7 +287,8 @@ Results are displayed differently based on category:
 - **Icons and Images**: Harry Potter themed assets
 
  
-
+## Screenshot
+![Screenshot](./Screenshot-harrypotterexplorer)
  
 
 
